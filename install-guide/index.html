@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lavender — Install Guide</title>
+    <style>
+        :root {
+            --bg: #1a1a2e;
+            --surface: #16213e;
+            --text: #c9b1ff;
+            --dim: #7b6fa0;
+            --accent: #e0cfff;
+            --border: #2a2a4a;
+            scroll-behavior: smooth;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: var(--bg);
+            font-family: 'Georgia', 'Times New Roman', serif;
+            color: var(--text);
+            padding: 40px 20px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        h1 { text-align: center; font-size: 2.5em; margin-bottom: 10px; }
+        .tagline { text-align: center; color: var(--dim); font-style: italic; margin-bottom: 40px; }
+        .step {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+        .step h2 { color: var(--accent); margin-bottom: 10px; font-size: 1.3em; }
+        .step p { color: var(--dim); margin-bottom: 8px; }
+        .step code {
+            background: #0d0d1a;
+            color: var(--accent);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        .step pre {
+            background: #0d0d1a;
+            color: var(--accent);
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            margin: 10px 0;
+        }
+        footer {
+            text-align: center;
+            color: var(--dim);
+            margin-top: 40px;
+            font-size: 0.9em;
+        }
+        a { color: var(--accent); }
+    </style>
+</head>
+<body>
+    <h1>Install Guide</h1>
+    <p class="tagline">How to install Lavender Linux</p>
+
+    <div class="step">
+        <h2>Step 1: Download the ISO</h2>
+        <p>Get the latest release from GitHub:</p>
+        <pre>curl -O https://github.com/kosakovitch-2013/Lavender-Linux/releases/latest/download/lavender.iso</pre>
+    </div>
+
+    <div class="step">
+        <h2>Step 2: Flash to USB</h2>
+        <p>Use <code>dd</code> to write the ISO:</p>
+        <pre>sudo dd if=lavender.iso of=/dev/sdX bs=4M status=progress
+sudo sync</pre>
+        <p>Replace <code>/dev/sdX</code> with your actual USB device (check with <code>lsblk</code>).</p>
+    </div>
+
+    <div class="step">
+        <h2>Step 3: Boot from USB</h2>
+        <p>Restart your computer, enter BIOS boot menu (F12, F8, or Del), and select the USB drive.</p>
+    </div>
+
+    <div class="step">
+        <h2>Step 4: Partition Your Disk</h2>
+        <p>Inside Lavender, run:</p>
+        <pre>cfdisk /dev/sda</pre>
+        <p>Create a new MBR (dos) partition, write changes, and quit.</p>
+    </div>
+
+    <div class="step">
+        <h2>Step 5: Format and Install</h2>
+        <pre>mkfs.ext4 /dev/sda1
+mount /dev/sda1 /mnt
+cp -r /bin /boot /etc /sbin /usr /lib* /init /mnt/
+mkdir -p /mnt/dev /mnt/proc /mnt/sys /mnt/tmp /mnt/root
+touch /mnt/etc/linit/.installed</pre>
+    </div>
+
+    <div class="step">
+        <h2>Step 6: Install GRUB</h2>
+        <pre>grub-install --target=i386-pc --boot-directory=/mnt/boot --recheck /dev/sda
+
+cat > /mnt/boot/grub/grub.cfg << 'EOF'
+set timeout=5
+set default=0
+menuentry "Lavender Linux (Persistent)" {
+    linux /boot/vmlinuz root=/dev/sda1 rw init=/init
+}
+EOF
+
+umount /mnt</pre>
+    </div>
+
+    <div class="step">
+        <h2>Step 7: Reboot</h2>
+        <pre>poweroff</pre>
+        <p>Remove the USB, start your computer, and boot into persistent Lavender 🌸</p>
+    </div>
+
+    <footer>
+        <p> Lavender Linux — <a href="https://kosakovitch-2013.github.io">Home</a></p>
+    </footer>
+</body>
+</html>
