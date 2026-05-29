@@ -1,6 +1,5 @@
 echo "you tryna to sneak huhhhh???"
-
-read -p "Y/N" ans
+read -p "Y/N:   " ans
 
 case "$ans" in
   [yY]*) echo "you sneaky sussy baka!";;
